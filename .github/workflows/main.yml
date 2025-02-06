@@ -46,6 +46,28 @@ jobs:
           private_key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Create Pull Request
+        id: create_pr
         run: |
           gh auth login --with-token <<< "${{ steps.auth.outputs.token }}"
-          gh pr create --base main --head TODO_issues_link --title "Sync TODO Issues" --body "Automated PR to sync TODO issue links"
+          PR_URL=$(gh pr create --base main --head TODO_issues_link --title "Sync TODO Issues" --body "Automated PR to sync TODO issue links")
+          echo "PR_URL=$PR_URL" >> $GITHUB_ENV
+
+      - name: Approve Pull Request
+        run: |
+          gh pr review --approve "${{ env.PR_URL }}"
+        env:
+          GH_TOKEN: ${{ steps.auth.outputs.token }}
+
+      - name: Merge Pull Request
+        run: |
+          gh pr merge --squash --auto "${{ env.PR_URL }}"
+        env:
+          GH_TOKEN: ${{ steps.auth.outputs.token }}
+
+      - name: Delete Remote Branch
+        run: |
+          gh auth login --with-token <<< "${{ steps.auth.outputs.token }}"
+          BRANCH="TODO_issues_link"
+          gh api -X DELETE repos/${{ github.repository }}/git/refs/heads/$BRANCH
+        env:
+          GH_TOKEN: ${{ steps.auth.outputs.token }}

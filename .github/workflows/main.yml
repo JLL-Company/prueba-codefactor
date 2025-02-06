@@ -13,21 +13,33 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - uses: "actions/checkout@v4"
-      - name: "TODO to Issue"
+      - name: Checkout repository
+        uses: "actions/checkout@v4"
+
+      - name: "Run TODO to Issue"
         uses: "alstr/todo-to-issue-action@v5"
         with:
           INSERT_ISSUE_URLS: "true"
+
       - name: Set Git user
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      - name: Commit and Push Changes
+
+      - name: Commit and Create New Branch
         run: |
+          git checkout -b TODO_issues_link || git checkout TODO_issues_link
           git add -A
-          if [[ `git status --porcelain` ]]; then
+          if [[ $(git status --porcelain) ]]; then
             git commit -m "Automatically added GitHub issue links to TODOs"
-            git push origin main
+            git push origin TODO_issues_link
           else
             echo "No changes to commit"
+            exit 0
           fi
+
+      - name: Create Pull Request
+        run: |
+          gh pr create --base main --head TODO_issues_link --title "Sync TODO Issues" --body "Automated PR to sync TODO issue links"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

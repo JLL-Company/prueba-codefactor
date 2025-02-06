@@ -38,8 +38,14 @@ jobs:
             exit 0
           fi
 
+      - name: Authenticate as GitHub App
+        id: auth
+        uses: actions/create-github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Create Pull Request
         run: |
+          gh auth login --with-token <<< "${{ steps.auth.outputs.token }}"
           gh pr create --base main --head TODO_issues_link --title "Sync TODO Issues" --body "Automated PR to sync TODO issue links"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

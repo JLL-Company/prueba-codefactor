@@ -6,6 +6,7 @@ def prueba():
   # mejorar salida de testo y formatearlo
   # a ver si ahora si
   # ahora si que si
+  # venga va esta si
   prueba = "esto es una prueba"
   return prueba
 

@@ -5,7 +5,8 @@ def prueba():
   Esto es una prueba
   """
   while true:
-    print("Hola mundo!")
+    return print("Hola mundo!")
+    a ver si es verdad
 
 
 prueba()

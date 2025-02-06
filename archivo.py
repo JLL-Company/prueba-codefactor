@@ -1,7 +1,7 @@
 # Archivo de prueba python
 
 def prueba():
-  asdasdasd
-  return cosa
+  prueba = "esto es una prueba"
+  return prueba
 
-prueba()
+print(prueba())
